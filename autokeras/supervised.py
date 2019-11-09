@@ -251,7 +251,7 @@ class DeepTaskSupervised(SearchSupervised):
         """
         self.cnn.best_model.produce_keras_model().save(model_file_name)
 
-    def predict(self, x_test):
+    def predict(self, x_test,raw = False):
         """Return predict results for the testing data.
 
         Args:
@@ -262,7 +262,10 @@ class DeepTaskSupervised(SearchSupervised):
         """
         x_test = self.preprocess(x_test)
         test_loader = self.data_transformer.transform_test(x_test)
+        if(raw):
+          return self.cnn.predict(test_loader)
         return self.inverse_transform_y(self.cnn.predict(test_loader))
+
 
     def evaluate(self, x_test, y_test):
         """Return the accuracy score between predict value and `y_test`.
@@ -331,7 +334,7 @@ class SingleModelSupervised(Supervised):
     def inverse_transform_y(self, output):
         pass
 
-    def predict(self, x_test):
+    def predict(self, x_test, raw = False):
         """Return the predicted labels for the testing data.
 
         Args:
@@ -349,6 +352,8 @@ class SingleModelSupervised(Supervised):
         model.eval()
 
         output = Backend.predict(model, test_loader)
+        if(raw):
+          return output
         return self.inverse_transform_y(output)
 
     def evaluate(self, x_test, y_test):
